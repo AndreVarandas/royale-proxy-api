@@ -1,0 +1,9 @@
+### Get tournament by tag
+
+GET http://localhost:3000/api/tournaments/2LRG9VJU
+Content-Type: application/json
+
+### Get tournament by name
+
+GET http://localhost:3000/api/tournaments?name=A B C TikTok
+Content-Type: application/json
