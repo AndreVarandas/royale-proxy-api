@@ -1,0 +1,20 @@
+### Get all locations
+GET http://localhost:3000/api/locations
+
+### Get all locations with limit
+GET http://localhost:3000/api/locations?limit=10
+
+### Get specific location by ID (replace LOCATION_ID with actual location ID)
+GET http://localhost:3000/api/locations/57000000
+
+### Get clan rankings for a location
+GET http://localhost:3000/api/locations/57000000/clanrankings
+
+### Get player rankings for a location
+GET http://localhost:3000/api/locations/57000000/playerrankings
+
+### Get clan war rankings for a location
+GET http://localhost:3000/api/locations/57000000/clanwarrankings
+
+### Get rankings with limit
+GET http://localhost:3000/api/locations/57000001/playerrankings?limit=20

@@ -1,0 +1,13 @@
+### Get all leaderboards
+GET http://localhost:3000/api/leaderboards
+
+### Get specific leaderboard by ID (replace LEADERBOARD_ID with actual leaderboard ID)
+GET http://localhost:3000/api/leaderboards/170000004
+
+### Get leaderboard with limit
+GET http://localhost:3000/api/leaderboards/170000004?limit=50
+
+### Get leaderboard with pagination
+# Note: Use 'after' or 'before' values from the 'paging' property in API responses
+# Example: GET http://localhost:3000/api/leaderboards/170000004?limit=20&after=CURSOR_FROM_PREVIOUS_RESPONSE
+GET http://localhost:3000/api/leaderboards/170000004?limit=20
