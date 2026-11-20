@@ -9,6 +9,12 @@ updates:
         dependency-type: production
       development-dependencies:
         dependency-type: development
+    ignore:
+      # typescript-eslint requires typescript <6.1.0 — TS 7 ships no compiler
+      # API yet. Revisit when typescript-eslint supports TS >=7.1
+      # (tracking: typescript-eslint/typescript-eslint#10940).
+      - dependency-name: "typescript"
+        versions: [">=6.1.0"]
 
   - package-ecosystem: github-actions
     directory: /
