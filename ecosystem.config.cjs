@@ -1,18 +1,22 @@
 /**
- * This file is used to configure pm2 (https://pm2.keymetrics.io/)
- * To run the Royale Proxy API server.
+ * pm2 configuration (https://pm2.keymetrics.io/) for the Royale Proxy API.
  *
- * As obvious as it seems, it specifies the name of the
- * server, the port it should run on, and the script to run.
+ * Run with: pm2 start ecosystem.config.cjs
  *
- * You probably don't need this file at all.
+ * NOTE: keep this at a single instance (no cluster mode). Rate limiting and
+ * response caching are in-memory, so multiple processes would not share state.
  */
 module.exports = {
   apps: [
     {
       name: "royale-proxy-api",
-      port: 3002,
-      script: "./.output/server/index.mjs",
+      script: "./dist/index.js",
+      instances: 1,
+      exec_mode: "fork",
+      env: {
+        NODE_ENV: "production",
+        PORT: 3002,
+      },
     },
   ],
 };
