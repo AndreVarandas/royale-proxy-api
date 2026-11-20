@@ -110,6 +110,9 @@ Everything is environment-driven (see `.env.example`). Values are read from a `.
 | `CORS_ORIGIN`                             | `*`                | Allowed origins (comma-separated list or `*`)                                     |
 | `PROXY_AUTH_TOKEN`                        | unset              | When set, `/api/*` requires this bearer token                                     |
 | `TRUST_PROXY`                             | `false`            | Trust `X-Forwarded-For` for rate-limit keys (only behind a trusted reverse proxy) |
+| `LOG_LEVEL`                               | `info`             | Request log level: `debug`, `info`, `warn`, `error`, `silent`                     |
+| `LOG_IP_MODE`                             | `hash`             | Caller IP in logs: `omit`, `hash` (SHA-256 prefix), `full`                        |
+| `METRICS_ENABLED`                         | `false`            | Expose Prometheus-format counters at `/metrics`                                   |
 
 ## 🔒 Security
 
@@ -124,6 +127,41 @@ v2 was rebuilt with a security-first posture:
 - **Fail-fast startup.** Missing/invalid configuration stops the server with a clear message instead of failing per-request.
 
 Found a vulnerability? Please open a private security advisory on GitHub rather than a public issue.
+
+## 📈 Observability
+
+Lean, dependency-free observability so you can see who's spending your key's quota:
+
+- **Structured request logs.** One JSON line per request on stdout (errors on stderr) — method, path, route pattern, status, duration, cache `HIT`/`MISS`, and caller IP. Works out of the box with `pm2 logs`, Docker log drivers, Loki, etc. Tune with `LOG_LEVEL`; `silent` disables logging entirely.
+- **Privacy-safe IPs.** `LOG_IP_MODE=hash` (default) logs a 12-char SHA-256 prefix instead of the raw address; `omit` drops it, `full` opts into raw IPs. Authorization headers and query strings are never logged.
+- **Optional metrics.** Set `METRICS_ENABLED=true` to expose Prometheus text counters at `/metrics`: requests by status class, cache hits/misses, local rate-limit rejections, upstream errors/timeouts, and uptime. Off by default (404); when `PROXY_AUTH_TOKEN` is set, `/metrics` requires the same bearer token.
+
+Example log line:
+
+```json
+{
+  "ts": "2026-11-20T12:00:00.000Z",
+  "level": "info",
+  "method": "GET",
+  "path": "/api/players/2PP",
+  "route": "/api/players/:tag",
+  "status": 200,
+  "durationMs": 142,
+  "cache": "MISS",
+  "ip": "a1b2c3d4e5f6"
+}
+```
+
+Prometheus scrape config:
+
+```yaml
+scrape_configs:
+  - job_name: royale-proxy
+    static_configs:
+      - targets: ["localhost:3002"]
+```
+
+Like the rate limiter and cache, metrics are in-memory and per-process — keep a single instance.
 
 ## 🧪 Development
 

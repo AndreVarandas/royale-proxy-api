@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { serve } from "@hono/node-server";
@@ -18,6 +18,8 @@ let lastAuthorization: string | undefined;
 let lastUpstreamPath: string | undefined;
 
 beforeAll(async () => {
+  // Request logging is on by default; keep test output clean.
+  vi.spyOn(console, "log").mockImplementation(() => {});
   upstream = createServer((req, res) => {
     lastAuthorization = req.headers.authorization;
     lastUpstreamPath = req.url;
@@ -48,6 +50,7 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+  vi.restoreAllMocks();
   await new Promise((resolve) => proxy.close(resolve));
   await new Promise((resolve) => upstream.close(resolve));
 });

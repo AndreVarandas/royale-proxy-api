@@ -51,8 +51,9 @@ beforeEach(() => {
   // Full reset so no implementation (e.g. a never-resolving promise from the
   // timeout test) can leak into the next test.
   vi.resetAllMocks();
-  // The app logs 5xx errors for observability; keep test output clean and
-  // assert on the spy where relevant instead.
+  // The app logs requests (info) and 5xx errors (error) for observability;
+  // keep test output clean and assert on the spies where relevant instead.
+  vi.spyOn(console, "log").mockImplementation(() => {});
   vi.spyOn(console, "error").mockImplementation(() => {});
   vi.mocked(ClashRoyaleAPI).mockImplementation(function () {
     return mocks as unknown as ClashRoyaleAPI;
@@ -430,5 +431,13 @@ describe("configuration", () => {
     expect(config.CACHE_TTL_MS).toBe(30_000);
     expect(config.UPSTREAM_TIMEOUT_MS).toBe(10_000);
     expect(config.TRUST_PROXY).toBe(false);
+    expect(config.LOG_LEVEL).toBe("info");
+    expect(config.LOG_IP_MODE).toBe("hash");
+    expect(config.METRICS_ENABLED).toBe(false);
+  });
+
+  it("rejects invalid LOG_LEVEL and LOG_IP_MODE", () => {
+    expect(() => loadConfig({ ...baseEnv, LOG_LEVEL: "verbose" })).toThrow(/LOG_LEVEL/);
+    expect(() => loadConfig({ ...baseEnv, LOG_IP_MODE: "raw" })).toThrow(/LOG_IP_MODE/);
   });
 });

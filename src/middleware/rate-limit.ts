@@ -1,19 +1,6 @@
-import { getConnInfo } from "@hono/node-server/conninfo";
-import type { Context, MiddlewareHandler } from "hono";
+import type { MiddlewareHandler } from "hono";
 import { rateLimiter } from "hono-rate-limiter";
-
-function clientIp(c: Context, trustProxy: boolean): string {
-  if (trustProxy) {
-    const first = c.req.header("x-forwarded-for")?.split(",")[0]?.trim();
-    if (first) return first;
-  }
-  try {
-    return getConnInfo(c).remote.address ?? "unknown";
-  } catch {
-    // No socket info (e.g. in-process app.request() in tests).
-    return "unknown";
-  }
-}
+import { clientIp } from "../lib/client-ip.js";
 
 /**
  * Per-IP rate limiting with an in-memory store — protects the shared

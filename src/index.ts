@@ -1,6 +1,7 @@
 import { serve } from "@hono/node-server";
 import { createApp } from "./app.js";
 import { loadConfig, loadEnvFile, type AppConfig } from "./env.js";
+import { createLogger } from "./lib/logger.js";
 import { version } from "./version.js";
 
 function main(): void {
@@ -14,13 +15,14 @@ function main(): void {
     process.exit(1);
   }
 
+  const logger = createLogger(config.LOG_LEVEL);
   const app = createApp(config);
   const server = serve({ fetch: app.fetch, port: config.PORT, hostname: config.HOST }, (info) => {
-    console.log(`royale-proxy-api v${version} listening on http://${info.address}:${info.port}`);
+    logger.info({ msg: "listening", version, address: info.address, port: info.port });
   });
 
   const shutdown = (signal: string) => {
-    console.log(`${signal} received — shutting down`);
+    logger.info({ msg: "shutting down", signal });
     server.close(() => process.exit(0));
     setTimeout(() => process.exit(1), 5_000).unref();
   };

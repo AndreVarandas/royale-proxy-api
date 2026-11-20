@@ -31,6 +31,15 @@ const envSchema = z.object({
     .enum(["true", "false", "1", "0"])
     .default("false")
     .transform((v) => v === "true" || v === "1"),
+  /** Structured JSON request logs to stdout. "silent" disables all logging. */
+  LOG_LEVEL: z.enum(["debug", "info", "warn", "error", "silent"]).default("info"),
+  /** Caller IP in request logs: omit, hash (12-char SHA-256 prefix) or full. */
+  LOG_IP_MODE: z.enum(["omit", "hash", "full"]).default("hash"),
+  /** Expose Prometheus-format counters at /metrics (gated by PROXY_AUTH_TOKEN when set). */
+  METRICS_ENABLED: z
+    .enum(["true", "false", "1", "0"])
+    .default("false")
+    .transform((v) => v === "true" || v === "1"),
 });
 
 export type AppConfig = z.output<typeof envSchema>;
