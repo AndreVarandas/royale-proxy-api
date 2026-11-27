@@ -24,7 +24,7 @@
   "dependencies": {
     "@hono/node-server": "^2.1.11",
     "@varandas/clash-royale-api": "^2.3.1",
-    "hono": "^4.13.19",
+    "hono": "^4.13.21",
     "hono-rate-limiter": "^0.5.4",
     "lru-cache": "^11.5.3",
     "zod": "^4.6.7"
